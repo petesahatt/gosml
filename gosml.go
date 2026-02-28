@@ -36,18 +36,8 @@ type Value struct {
 }
 
 func readChunk(r *bufio.Reader, buf []byte) error {
-	bytes, err := r.Read(buf)
-	if err != nil {
-		return err
-	}
-
-	if bytes < len(buf) {
-		// fmt.Printf("ReadChunk %d -> %d\n", len(buf), bytes)
-		return errors.New("premature eof")
-	}
-
-	// success - no error
-	return nil
+	_, err := io.ReadFull(r, buf)
+	return err
 }
 
 // readFile reads from buffered reader until next SML file has been completely read and returns
@@ -160,6 +150,9 @@ func (oc *obisGroupCallback) call(obisCode OctetString, listEntry *ListEntry) {
 		callback(listEntry)
 	}
 	// check if additional registered handlers exist for remaining obis groups
+	if len(obisCode) == 0 {
+		return
+	}
 	subOc, ok := oc.childGroups[obisCode[0]]
 	if ok {
 		subOc.call(obisCode[1:], listEntry)
@@ -203,23 +196,26 @@ loop:
 			return err
 		}
 		// parse without escaped begin and end sequences
-		fileMessages, err := parseFile(fileBytes[8 : len(fileBytes)-8])
-		if err != nil {
-			return err
+		fileMessages, parseErr := func() (msgs []*Message, err error) {
+			defer func() {
+				if r := recover(); r != nil {
+					err = errors.New("parse panic")
+				}
+			}()
+			return parseFile(fileBytes[8 : len(fileBytes)-8])
+		}()
+		if parseErr != nil {
+			continue
 		}
-		// handle messages according to given options
 		for _, msg := range fileMessages {
-			if options.topLevelCallback != nil {
-				if msg.MessageBody.Tag == MESSAGE_GET_LIST_RESPONSE {
-					list, ok := msg.MessageBody.Data.(GetListResponse)
-					if !ok {
-						continue
-					}
-					for _, elem := range list.ValList {
-						if len(elem.ObjName) > 0 {
-							options.topLevelCallback.call(elem.ObjName, elem)
-						}
-						// fmt.Printf("%v\n", elem)
+			if options.topLevelCallback != nil && msg.MessageBody.Tag == MESSAGE_GET_LIST_RESPONSE {
+				list, ok := msg.MessageBody.Data.(GetListResponse)
+				if !ok {
+					continue
+				}
+				for _, elem := range list.ValList {
+					if len(elem.ObjName) > 0 {
+						options.topLevelCallback.call(elem.ObjName, elem)
 					}
 				}
 			}
