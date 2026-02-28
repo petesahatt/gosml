@@ -30,11 +30,7 @@ func (le *ListEntry) ObjectName() string {
 }
 
 func (le *ListEntry) Scaler() float64 {
-	scaler := 1
-	if le.scaler != 0 {
-		scaler = int(le.scaler)
-	}
-	return math.Pow10(scaler)
+	return math.Pow10(int(le.scaler))
 }
 
 func (le *ListEntry) ValueString() string {
@@ -46,13 +42,6 @@ func (le *ListEntry) ValueString() string {
 	default:
 		if ((le.Value.Typ & OCTET_TYPE_FIELD) == OCTET_TYPE_INTEGER) || ((le.Value.Typ & OCTET_TYPE_FIELD) == OCTET_TYPE_UNSIGNED) {
 			value := float64(le.Value.DataInt) * le.Scaler()
-			// unit := ""
-			// switch entry.Unit {
-			// case 0x1B:
-			// 	unit = "W"
-			// case 0x1E:
-			// 	unit = "Wh"
-			// }
 			return fmt.Sprintf("%12.1f", value)
 		}
 	}
@@ -70,28 +59,6 @@ func (le *ListEntry) Float() float64 {
 func (le *ListEntry) String() string {
 	return fmt.Sprintf("%-22s%s", le.ObjectName(), le.ValueString())
 }
-
-// func PrintListEntry(entry sml.ListEntry) {
-// 	fmt.Printf("%-22s", entry)
-
-// 	if entry.Value.Typ == sml.TYPE_OCTET_STRING {
-// 		fmt.Printf("% x\n", entry.Value.DataBytes)
-// 	} else if entry.Value.Typ == sml.TYPE_BOOLEAN {
-// 		fmt.Printf("%v\n", entry.Value.DataBoolean)
-// 	} else if ((entry.Value.Typ & sml.TYPE_FIELD) == sml.TYPE_INTEGER) || ((entry.Value.Typ & sml.TYPE_FIELD) == sml.TYPE_UNSIGNED) {
-// 		value := ListEntry2Float(entry)
-
-// 		unit := ""
-// 		switch entry.Unit {
-// 		case 0x1B:
-// 			unit = "W"
-// 		case 0x1E:
-// 			unit = "Wh"
-// 		}
-
-// 		fmt.Printf("%12.1f %-3s\n", value, unit)
-// 	}
-// }
 
 func GetListResponseParse(buf *Buffer) (GetListResponse, error) {
 	list := GetListResponse{}
