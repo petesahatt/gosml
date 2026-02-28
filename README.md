@@ -1,5 +1,7 @@
 # gosml
 
+[![CI](https://github.com/petesahatt/gosml/actions/workflows/ci.yml/badge.svg)](https://github.com/petesahatt/gosml/actions/workflows/ci.yml)
+
 Go library for parsing [SML (Smart Message Language)](https://de.wikipedia.org/wiki/Smart_Message_Language) data from smart meters.
 
 This is a fork of [mfmayer/gosml](https://github.com/mfmayer/gosml) (itself a fork of [andig/gosml](https://github.com/andig/gosml)), which is a Go port of [volkszaehler/libsml](https://github.com/volkszaehler/libsml).
@@ -37,7 +39,7 @@ err := gosml.Read(reader,
 
 ## Example
 
-See [examples/emmon](https://github.com/petesahatt/gosml/tree/master/examples/emmon) and the [libsml](https://github.com/volkszaehler/libsml) documentation.
+See [examples/emmon](https://github.com/petesahatt/gosml/tree/main/examples/emmon) and the [libsml](https://github.com/volkszaehler/libsml) documentation.
 
 Test binaries and SML files from real-world meters: <https://github.com/devZer0/libsml-testing>
 
