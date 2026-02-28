@@ -1,3 +1,3 @@
-module github.com/mfmayer/gosml
+module github.com/petesahatt/gosml
 
 go 1.19
