@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	sml "github.com/mfmayer/gosml"
+	sml "github.com/petesahatt/gosml"
 )
 
 func printUsage() {
